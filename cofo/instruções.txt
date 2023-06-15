@@ -1,0 +1,47 @@
+- Implementar
+o TAD Cofo (int)
+
+
+- Implementar
+o programa Apl.c com as seguintes funcionalidades:
+
+
+--- Criar
+um cofo vazio
+
+
+--- Inserir
+números inteiros no cofo
+
+
+--- Remover
+números inteiros do cofo
+
+
+--- Consultar
+se um número inteiro está no cofo
+
+
+--- Destruir
+um cofo vazio
+
+
+- Upload
+dos arquivos prog.c cofo.h e cofo.c e do
+arquivo executável / se for no replit compartilha o link pra executarmos
+
+
+- Fazer
+o upload de tudo zipado no classroom
+
+
+- Informar
+qual a plataforma onde o executável funciona
+
+
+- Colocar
+o seus nomes em todos os arquivos
+
+
+- Apresentar
+aos monitores

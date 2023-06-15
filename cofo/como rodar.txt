@@ -1,0 +1,12 @@
+Projeto feito no visual studio code
+
+Requisitos:
+    -GCC instalado
+
+Abra o terminal na pasta raiz digite:
+ gcc -c cofo.c
+ gcc -c main.c
+
+ depois:
+
+ gcc -o prog.exe cofo.o main.o
