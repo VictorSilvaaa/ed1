@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>AFN Table</title>
+</head>
+
+<body>
+
+    <h2>AFN Transitions Table</h2>
+
+    <form id="form1">
+        <div class="input">
+            <label for="numEstados">Número de Estados:</label>
+            <input type="number" id="inputNumEstados">
+        </div>
+
+        <div class="input">
+            <label for="alfabeto">Alfabeto (separado por vírgula):</label>
+            <input type="text" id="inputAlfabeto">
+        </div>
+
+        <div class="input">
+            <label for="finais">Estados Finais (separados por vírgula):</label>
+            <input type="text" id="inputFinais">
+        </div>
+
+        <button type="submit" id="enviar1">Confirmar</button>
+    </form>
+
+    <form id="form2">
+        <table>
+            <thead>
+                <tr id="tableAlfabeto">
+                    <th>δ</th>
+                </tr>
+            </thead>
+            <tbody id="tableEstados">
+
+
+            </tbody>
+        </table>
+        <button id="enviar2">Enviar</button>
+    </form>
+
+    <button id="exibir">Exibir AFD</button>
+
+
+    <script type="module" src="forms.js"></script>
+    <script type="module" src="AFNforAFD.js"></script>
+</body>
+
+</html>
