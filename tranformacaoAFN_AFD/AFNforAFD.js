@@ -1,11 +1,33 @@
 import { inputAlfabeto, inputNumEstados, estadosAFN, inputEstadosFinais, estadosTransicoes } from './forms.js';
 
+// Exemplo de uso
+const Q1 = ["q0", "q1", "q2", "q3"];
+const Sigma = ["a", "b", "c"];
+const transicoes = {
+    "q0": { "a": ["q1", "q2"], "c": ["q3"] },
+    "q1": { "a": ["q0"], "b": ["q0", "q1"] },
+    "q2": { "c": ["q2"] },
+    "q3": { "a": ["q2"], "b": ["q1"] },
+
+};
+const transicoes2 = {
+    "q0": { "a": ["q1", "q2"], "c": ["q3"] },
+    "q1": { "a": ["q0"], "b": ["q0"] },
+    "q2": { "a": ["q2"], "c": ["q2"] },
+    "q3": { "a": ["q2"], "b": ["q1"] },
+
+};
+const F1 = ["q1", "q2"];
+
+
 // Verifica se um estado que possui transições não determinísticas
 function hasNonDeterministicTransitions(transicoes) {
     for (const estado in transicoes) {
         for (const simbolo in transicoes[estado]) {
-            if (Array.isArray(transicoes[estado][simbolo]) && transicoes[estado][simbolo].length > 1) {
-                return true;
+            if (transicoes[estado] && transicoes[estado][simbolo]) {
+                if (Array.isArray(transicoes[estado][simbolo]) && transicoes[estado][simbolo].length > 1) {
+                    return true;
+                }
             }
         }
     }
@@ -16,8 +38,10 @@ function hasNonDeterministicTransitions(transicoes) {
 function getNonDeterministicTransition(transicoes) {
     for (const estado in transicoes) {
         for (const simbolo in transicoes[estado]) {
-            if (Array.isArray(transicoes[estado][simbolo]) && transicoes[estado][simbolo].length > 1) {
-                return { state: estado, simbolo: simbolo, transitions: transicoes[estado][simbolo] };
+            if (transicoes[estado] && transicoes[estado][simbolo]) {
+                if (Array.isArray(transicoes[estado][simbolo]) && transicoes[estado][simbolo].length > 1) {
+                    return { estado: estado, simbolo: simbolo, transicoes: transicoes[estado][simbolo] };
+                }
             }
         }
     }
@@ -25,20 +49,38 @@ function getNonDeterministicTransition(transicoes) {
 
 // Cria novo estado com o nome sendo a concatenação do conjunto de transições que o estado não determinístico possui
 function createStateFromNonDetTransition(nonDetTransition) {
-    return nonDetTransition.transitions.join("");
+    // Ordenar os estados para garantir consistência
+    const orderedStates = nonDetTransition.transicoes.sort();
+    return orderedStates.join("");
 }
 
 // Replica as transições para o novo estado
 function replaceReferencesInTransicoes(transicoes, nonDetTransition, newState) {
-    for (let transicao of nonDetTransition.transitions) {
-        if (!Array.isArray(transicoes[newState][nonDetTransition.simbolo])) {
-            transicoes[newState][nonDetTransition.simbolo] = [];
+    // Substituindo, na tabela, todas as referências a {q21, ..., q2n} por q21...q2n;
+    for (const estado in transicoes) {
+        for (const simbolo of Sigma) {
+            if (Array.isArray(transicoes[estado][simbolo]) && transicoes[estado][simbolo].length > 1) {
+                if (transicoes[estado][simbolo].join("") == newState) {
+                    transicoes[estado][simbolo] = [newState];
+                };
+            }
+
         }
-        transicoes[newState][nonDetTransition.simbolo].push(transicao);
     }
-    transicoes[nonDetTransition.state][nonDetTransition.simbolo] = newState;
+    transicoes[newState] = {};
+    for (const simbolo of Sigma) {
+        transicoes[newState][simbolo] = [];
+        for (const estado of nonDetTransition.transicoes) {
+            if (transicoes[estado][simbolo]) {
+                transicoes[newState][simbolo].push(...transicoes[estado][simbolo]);
+            }
+        }
+    }
+
     return transicoes;
 }
+
+
 
 // Função principal de transformação do AFN em AFD
 function transformAFNtoAFD(Q1, Sigma, transicoes, F1) {
@@ -47,32 +89,25 @@ function transformAFNtoAFD(Q1, Sigma, transicoes, F1) {
     let delta2 = {};
 
     // Passo 2
-    for (let i = 0; i < Q1.length; i++) {
-        Q2.push("q2" + i);
-    }
-
+    Q2 = Q1;
     // Passo 4
-    for (let i = 0; i < Q1.length; i++) {
-        if (F1.includes(Q1[i])) {
-            F2.push(Q2[i]);
-        }
-    }
+    F2 = F1;
 
     // Passo 6
     delta2 = transicoes;
     console.log("Delta2 após Passo 6:", delta2);
 
     // Passo 8
-    while (hasNonDeterministicTransitions(delta2)) {
+    let contador = 0;
+    while (hasNonDeterministicTransitions(delta2) && contador < 25) {
         const nonDetTransition = getNonDeterministicTransition(delta2);
         const newState = createStateFromNonDetTransition(nonDetTransition);
-        delta2[newState] = {};
         console.log("Transição não determinística encontrada:", nonDetTransition);
         console.log("Novo estado criado:", newState);
 
         delta2 = replaceReferencesInTransicoes(delta2, nonDetTransition, newState);
-
         console.log("Delta2 após substituição:", delta2);
+        contador++;
     }
 
     return {
@@ -83,19 +118,13 @@ function transformAFNtoAFD(Q1, Sigma, transicoes, F1) {
     };
 }
 
-// Exemplo de uso
-const Q1 = ["q0", "q1", "q2", "q3"];
-const Sigma = ["a", "b","c"];
-const transicoes = {
-    "q0": { "a": ["q1", "q2"], "c":["q3"] },
-    "q1": { "a": ["q0"], "b":["q0","q1"]},
-    "q2": { "c":["q2"] },
-    "q3": { "a": ["q2"], "b":["q1"] },
 
-};
-const F1 = ["q1","q2"];
+// ... (Código posterior)
 const buttonExibir = document.getElementById("exibir");
 buttonExibir.addEventListener("click", (e) => {
     const result = transformAFNtoAFD(Q1, Sigma, transicoes, F1);
     console.log(result);
+    const divResult = document.getElementById("result");
+    divResult.innerHTML = JSON.stringify(result);
+
 });
