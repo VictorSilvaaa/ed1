@@ -56,7 +56,7 @@ form2.addEventListener("submit", (e) => {
         inputAlfabeto.forEach(a => {
             const inputId = `${q}${a}`;
             const inputValue = document.getElementById(inputId).value;
-            transicoes[a] = null;
+            transicoes[a] = [];
             if (inputValue !== "") {
                 transicoes[a] = inputValue.split(",");
             }
