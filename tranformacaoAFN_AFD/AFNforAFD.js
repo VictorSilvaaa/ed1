@@ -17,6 +17,21 @@ const transicoes2 = {
     "q3": { "a": ["q2"], "b": ["q1"] },
 
 };
+//dar certo
+const transicoes3 = {
+    "q0": { "a": ["q0", "q1"] },
+    "q1": { "b": ["q2"] },
+    "q2": {},
+};
+const transicoes4 = {
+    "q0": { "a": ["q0", "q1"] },
+    "q1": { "b": ["q2", "q3", "q5"] },
+    "q2": { "a": ["q1"] },
+    "q3": { "c": ["q4"] },
+    "q4": { "c": ["q4"] },
+    "q5": { "c": ["q6"] },
+    "q6": { "d": ["q6"] }
+};
 const F1 = ["q1", "q2"];
 
 
@@ -60,7 +75,7 @@ function replaceReferencesInTransicoes(transicoes, nonDetTransition, newState) {
     for (const estado in transicoes) {
         for (const simbolo of Sigma) {
             if (Array.isArray(transicoes[estado][simbolo]) && transicoes[estado][simbolo].length > 1) {
-                if (transicoes[estado][simbolo].join("") == newState) {
+                if (transicoes[estado][simbolo].sort().join("") == newState) {
                     transicoes[estado][simbolo] = [newState];
                 };
             }
@@ -77,6 +92,18 @@ function replaceReferencesInTransicoes(transicoes, nonDetTransition, newState) {
         }
     }
 
+    for (const estadomacro in transicoes) {
+        for (const estadomicro in transicoes) {
+            for (const simbolo in transicoes[estadomicro]) {
+                if (Array.isArray(transicoes[estadomicro][simbolo])) {
+                    const conjuntoTransicoes = transicoes[estadomicro][simbolo].sort().join("");
+                    if (conjuntoTransicoes == estadomacro) {
+                        transicoes[estadomicro][simbolo] = [estadomacro];
+                    }
+                }
+            }
+        }
+    }
     return transicoes;
 }
 
@@ -99,7 +126,7 @@ function transformAFNtoAFD(Q1, Sigma, transicoes, F1) {
 
     // Passo 8
     let contador = 0;
-    while (hasNonDeterministicTransitions(delta2) && contador < 25) {
+    while (hasNonDeterministicTransitions(delta2) && contador < 50) {
         const nonDetTransition = getNonDeterministicTransition(delta2);
         const newState = createStateFromNonDetTransition(nonDetTransition);
         console.log("Transição não determinística encontrada:", nonDetTransition);
